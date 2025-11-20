@@ -26,11 +26,12 @@ OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 def build_prompt(question: str) -> str:
     """
     Baut das Chat-Prompt so, wie es im Training genutzt wurde.
+    STRICT MODE: Das Modell MUSS valides JSON schreiben.
     """
     system_message = (
         "Du bist ein H5P-Content-Generator. "
         "Erstelle IMMER eine vollständig valide H5P content.json für Multiple-Choice. "
-        "Gib ausschließlich JSON zurück, keine Erklärungen."
+        "Antworte ausschließlich mit JSON ohne Erklärungen."
     )
 
     prompt = (
@@ -43,9 +44,7 @@ def build_prompt(question: str) -> str:
 
 
 def model_answer(question: str) -> str:
-    """
-    Ruft das Modell auf und erzeugt eine rohe JSON-Antwort.
-    """
+    """ Ruft das Modell im STRICT MODE auf. """
     prompt = build_prompt(question)
 
     inputs = tokenizer(prompt, return_tensors="pt")
@@ -53,7 +52,7 @@ def model_answer(question: str) -> str:
         output = model.generate(
             **inputs,
             max_new_tokens=500,
-            do_sample=False,   # deterministic → stabiler JSON
+            do_sample=False,
             temperature=0.0
         )
 
@@ -61,9 +60,7 @@ def model_answer(question: str) -> str:
 
 
 def extract_json(raw_text: str) -> str | None:
-    """
-    Extrahiert den JSON-Teil aus dem Modell-Output.
-    """
+    """ Extrahiert den JSON-Teil aus der Modellantwort. """
     try:
         start = raw_text.index("{")
         end = raw_text.rindex("}") + 1
@@ -73,9 +70,7 @@ def extract_json(raw_text: str) -> str | None:
 
 
 def save_h5p(json_text: str, filename: str):
-    """
-    Speichert validen JSON-String als content.json innerhalb einer .h5p Datei.
-    """
+    """ Speichert valides JSON als content.json in einer H5P-Datei. """
     import zipfile
 
     output_file = OUTPUT_DIR / filename
@@ -102,22 +97,22 @@ def save_h5p(json_text: str, filename: str):
 # --------------------------------------
 
 def generate_h5p(question: str):
-
     print(f"\n🔹 Frage: {question}")
 
+    # Modellantwort
     raw = model_answer(question)
     extracted = extract_json(raw)
 
     if extracted is None:
-        print("❌ Konnte kein JSON aus Modellantwort extrahieren.")
-        print("Antwort des Modells:", raw)
+        print("❌ Konnte kein JSON extrahieren.")
+        print("Antwort:", raw)
         return
 
-    # Validierung
+    # STRICT MODE VALIDIERUNG
     ok, error, data = H5PValidator.validate_multiple_choice(extracted)
 
     if not ok:
-        print("❌ JSON ungültig:", error)
+        print("❌ Ungültiges JSON:", error)
         print("Antwort:", extracted)
         return
 
@@ -129,6 +124,5 @@ def generate_h5p(question: str):
 # AUSFÜHRUNG
 # --------------------------------------
 if __name__ == "__main__":
-
     frage = "Erstelle eine Multiple-Choice-Frage über Phishing."
     generate_h5p(frage)
