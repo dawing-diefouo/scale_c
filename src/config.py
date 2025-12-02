@@ -41,7 +41,7 @@ class TrainingConfig:
     batch_size: int = 1
     gradient_accumulation_steps: int = 4
     learning_rate: float = 1e-4
-    warmup_steps: int = 300
+    warmup_steps: int = 150
     logging_steps: int = 10
     save_steps: int = 500
     eval_steps: int = 100

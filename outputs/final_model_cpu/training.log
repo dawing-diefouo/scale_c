@@ -1,320 +1,106 @@
-2025-11-18 03:16:45,139 - INFO - ============================================================
-2025-11-18 03:16:45,139 - INFO - 🎓 H5P-Generator Training
-2025-11-18 03:16:45,139 - INFO - ============================================================
-2025-11-18 03:16:45,139 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:16:45,139 - INFO - Dataset: data\processed\train_data.jsonl
-2025-11-18 03:16:45,139 - INFO - Output: outputs\final_model_cpu
-2025-11-18 03:16:45,140 - INFO - Max Length: 1024
-2025-11-18 03:16:45,140 - INFO - Batch Size: 1
-2025-11-18 03:16:45,140 - INFO - Gradient Accumulation: 4
-2025-11-18 03:16:45,140 - INFO - Effektive Batch Size: 4
-2025-11-18 03:16:45,140 - INFO - Epochen: 5
-2025-11-18 03:16:45,140 - INFO - Learning Rate: 0.0002
-2025-11-18 03:16:45,141 - INFO - ============================================================
-2025-11-18 03:16:45,142 - INFO - ✓ Konfiguration gespeichert
-2025-11-18 03:16:45,142 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
-2025-11-18 03:16:46,030 - ERROR - ❌ Fehler: No module named 'utils'
-Traceback (most recent call last):
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\train.py", line 40, in main
-    train_dataset = data_loader.load_train_data()
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\data_loader.py", line 24, in load_train_data
-    self._validate_dataset(dataset)
-    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\data_loader.py", line 59, in _validate_dataset
-    from utils import is_valid_json
-ModuleNotFoundError: No module named 'utils'
-2025-11-18 03:17:53,977 - INFO - ============================================================
-2025-11-18 03:17:53,977 - INFO - 🎓 H5P-Generator Training
-2025-11-18 03:17:53,977 - INFO - ============================================================
-2025-11-18 03:17:53,977 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:17:53,977 - INFO - Dataset: data\processed\train_data.jsonl
-2025-11-18 03:17:53,977 - INFO - Output: outputs\final_model_cpu
-2025-11-18 03:17:53,978 - INFO - Max Length: 1024
-2025-11-18 03:17:53,978 - INFO - Batch Size: 1
-2025-11-18 03:17:53,978 - INFO - Gradient Accumulation: 4
-2025-11-18 03:17:53,978 - INFO - Effektive Batch Size: 4
-2025-11-18 03:17:53,978 - INFO - Epochen: 5
-2025-11-18 03:17:53,978 - INFO - Learning Rate: 0.0002
-2025-11-18 03:17:53,978 - INFO - ============================================================
-2025-11-18 03:17:53,979 - INFO - ✓ Konfiguration gespeichert
-2025-11-18 03:17:53,979 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
-2025-11-18 03:17:55,739 - INFO - ✓ 9 Beispiele geladen
-2025-11-18 03:17:55,739 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
-2025-11-18 03:17:55,739 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
-2025-11-18 03:17:55,739 - ERROR - ❌ Fehler: 'NoneType' object has no attribute 'exists'
-Traceback (most recent call last):
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\train.py", line 41, in main
-    eval_dataset = data_loader.load_eval_data()
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\data_loader.py", line 36, in load_eval_data
-    if not self.config.eval_path.exists() or not self.config.eval_path:
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'exists'
-2025-11-18 03:19:36,689 - INFO - ============================================================
-2025-11-18 03:19:36,689 - INFO - 🎓 H5P-Generator Training
-2025-11-18 03:19:36,689 - INFO - ============================================================
-2025-11-18 03:19:36,690 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:19:36,690 - INFO - Dataset: data\processed\train_data.jsonl
-2025-11-18 03:19:36,690 - INFO - Output: outputs\final_model_cpu
-2025-11-18 03:19:36,690 - INFO - Max Length: 1024
-2025-11-18 03:19:36,690 - INFO - Batch Size: 1
-2025-11-18 03:19:36,690 - INFO - Gradient Accumulation: 4
-2025-11-18 03:19:36,690 - INFO - Effektive Batch Size: 4
-2025-11-18 03:19:36,690 - INFO - Epochen: 5
-2025-11-18 03:19:36,690 - INFO - Learning Rate: 0.0002
-2025-11-18 03:19:36,690 - INFO - ============================================================
-2025-11-18 03:19:36,691 - INFO - ✓ Konfiguration gespeichert
-2025-11-18 03:19:36,691 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
-2025-11-18 03:19:37,515 - INFO - ✓ 9 Beispiele geladen
-2025-11-18 03:19:37,516 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
-2025-11-18 03:19:37,516 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
-2025-11-18 03:19:37,516 - INFO - ℹ️ Keine Evaluationsdaten konfiguriert (eval_path=None)
-2025-11-18 03:19:37,516 - INFO - ⚙️ Lade Tokenizer: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:19:38,210 - INFO - ✓ Padding-Seite: left
-2025-11-18 03:19:38,222 - INFO - ✓ Vocab Size: 32000
-2025-11-18 03:19:38,222 - INFO - ✓ BOS: <s> (ID: 1)
-2025-11-18 03:19:38,223 - INFO - ✓ EOS: </s> (ID: 2)
-2025-11-18 03:19:38,223 - INFO - ✓ PAD: </s> (ID: 2)
-2025-11-18 03:19:38,223 - INFO - ⚙️ Lade Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:19:42,643 - INFO - ✓ Modell geladen auf: cpu
-2025-11-18 03:19:42,646 - INFO - ✓ Model dtype: torch.float32
-2025-11-18 03:19:42,646 - INFO - 🔧 Aktiviere LoRA
-2025-11-18 03:19:42,900 - ERROR - ❌ Fehler: No module named 'utils'
-Traceback (most recent call last):
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\train.py", line 45, in main
-    model, tokenizer = model_setup.setup()
-                       ~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\model_setup.py", line 101, in setup
-    model = self.apply_lora(model)
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\model_setup.py", line 85, in apply_lora
-    from utils import print_trainable_params
-ModuleNotFoundError: No module named 'utils'
-2025-11-18 03:22:07,592 - INFO - ============================================================
-2025-11-18 03:22:07,592 - INFO - 🎓 H5P-Generator Training
-2025-11-18 03:22:07,592 - INFO - ============================================================
-2025-11-18 03:22:07,592 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:22:07,592 - INFO - Dataset: data\processed\train_data.jsonl
-2025-11-18 03:22:07,592 - INFO - Output: outputs\final_model_cpu
-2025-11-18 03:22:07,592 - INFO - Max Length: 1024
-2025-11-18 03:22:07,592 - INFO - Batch Size: 1
-2025-11-18 03:22:07,592 - INFO - Gradient Accumulation: 4
-2025-11-18 03:22:07,593 - INFO - Effektive Batch Size: 4
-2025-11-18 03:22:07,593 - INFO - Epochen: 5
-2025-11-18 03:22:07,593 - INFO - Learning Rate: 0.0002
-2025-11-18 03:22:07,593 - INFO - ============================================================
-2025-11-18 03:22:07,593 - INFO - ✓ Konfiguration gespeichert
-2025-11-18 03:22:07,593 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
-2025-11-18 03:22:08,326 - INFO - ✓ 9 Beispiele geladen
-2025-11-18 03:22:08,326 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
-2025-11-18 03:22:08,327 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
-2025-11-18 03:22:08,327 - INFO - ℹ️ Keine Evaluationsdaten konfiguriert (eval_path=None)
-2025-11-18 03:22:08,327 - INFO - ⚙️ Lade Tokenizer: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:22:09,032 - INFO - ✓ Padding-Seite: left
-2025-11-18 03:22:09,044 - INFO - ✓ Vocab Size: 32000
-2025-11-18 03:22:09,045 - INFO - ✓ BOS: <s> (ID: 1)
-2025-11-18 03:22:09,045 - INFO - ✓ EOS: </s> (ID: 2)
-2025-11-18 03:22:09,045 - INFO - ✓ PAD: </s> (ID: 2)
-2025-11-18 03:22:09,045 - INFO - ⚙️ Lade Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:22:12,053 - INFO - ✓ Modell geladen auf: cpu
-2025-11-18 03:22:12,054 - INFO - ✓ Model dtype: torch.float32
-2025-11-18 03:22:12,054 - INFO - 🔧 Aktiviere LoRA
-2025-11-18 03:22:12,275 - INFO - ✓ Trainierbare Parameter: 12,615,680 / 1,112,664,064 (1.13%)
-2025-11-18 03:22:12,276 - INFO - ✓ LoRA Rank: 16
-2025-11-18 03:22:12,276 - INFO - ✓ LoRA Alpha: 32
-2025-11-18 03:22:12,276 - INFO - ✓ Target Modules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']
-2025-11-18 03:22:12,276 - INFO - 🧹 Tokenisiere Trainingsdaten...
-2025-11-18 03:22:12,414 - INFO - ✓ Training tokenisiert: 9 Beispiele
-2025-11-18 03:22:12,414 - INFO - 🚀 Starte Training
-2025-11-18 03:22:12,415 - ERROR - ❌ Fehler: TrainingArguments.__init__() got an unexpected keyword argument 'evaluation_strategy'
-Traceback (most recent call last):
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\train.py", line 62, in main
-    trainer_instance.train(model, tokenizer, train_tokenized, eval_tokenized)
-    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\trainer.py", line 74, in train
-    training_args = self.create_training_args(has_eval=eval_dataset is not None)
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\trainer.py", line 23, in create_training_args
-    return TrainingArguments(
-        output_dir=str(self.config.output_dir),
-    ...<41 lines>...
-        dataloader_num_workers=0,
-    )
-TypeError: TrainingArguments.__init__() got an unexpected keyword argument 'evaluation_strategy'
-2025-11-18 03:25:21,408 - INFO - ============================================================
-2025-11-18 03:25:21,409 - INFO - 🎓 H5P-Generator Training
-2025-11-18 03:25:21,409 - INFO - ============================================================
-2025-11-18 03:25:21,409 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:25:21,409 - INFO - Dataset: data\processed\train_data.jsonl
-2025-11-18 03:25:21,409 - INFO - Output: outputs\final_model_cpu
-2025-11-18 03:25:21,409 - INFO - Max Length: 1024
-2025-11-18 03:25:21,409 - INFO - Batch Size: 1
-2025-11-18 03:25:21,409 - INFO - Gradient Accumulation: 4
-2025-11-18 03:25:21,409 - INFO - Effektive Batch Size: 4
-2025-11-18 03:25:21,409 - INFO - Epochen: 5
-2025-11-18 03:25:21,409 - INFO - Learning Rate: 0.0002
-2025-11-18 03:25:21,409 - INFO - ============================================================
-2025-11-18 03:25:21,410 - INFO - ✓ Konfiguration gespeichert
-2025-11-18 03:25:21,410 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
-2025-11-18 03:25:22,120 - INFO - ✓ 9 Beispiele geladen
-2025-11-18 03:25:22,120 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
-2025-11-18 03:25:22,120 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
-2025-11-18 03:25:22,120 - INFO - ℹ️ Keine Evaluationsdaten konfiguriert (eval_path=None)
-2025-11-18 03:25:22,120 - INFO - ⚙️ Lade Tokenizer: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:25:22,859 - INFO - ✓ Padding-Seite: left
-2025-11-18 03:25:22,864 - INFO - ✓ Vocab Size: 32000
-2025-11-18 03:25:22,865 - INFO - ✓ BOS: <s> (ID: 1)
-2025-11-18 03:25:22,865 - INFO - ✓ EOS: </s> (ID: 2)
-2025-11-18 03:25:22,865 - INFO - ✓ PAD: </s> (ID: 2)
-2025-11-18 03:25:22,865 - INFO - ⚙️ Lade Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:25:25,789 - INFO - ✓ Modell geladen auf: cpu
-2025-11-18 03:25:25,791 - INFO - ✓ Model dtype: torch.float32
-2025-11-18 03:25:25,792 - INFO - 🔧 Aktiviere LoRA
-2025-11-18 03:25:26,031 - INFO - ✓ Trainierbare Parameter: 12,615,680 / 1,112,664,064 (1.13%)
-2025-11-18 03:25:26,032 - INFO - ✓ LoRA Rank: 16
-2025-11-18 03:25:26,032 - INFO - ✓ LoRA Alpha: 32
-2025-11-18 03:25:26,032 - INFO - ✓ Target Modules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']
-2025-11-18 03:25:26,032 - INFO - 🧹 Tokenisiere Trainingsdaten...
-2025-11-18 03:25:26,075 - INFO - ✓ Training tokenisiert: 9 Beispiele
-2025-11-18 03:25:26,075 - INFO - 🚀 Starte Training
-2025-11-18 03:25:36,968 - ERROR - ❌ Training-Fehler: element 0 of tensors does not require grad and does not have a grad_fn
-Traceback (most recent call last):
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\trainer.py", line 92, in train
-    trainer.train()
-    ~~~~~~~~~~~~~^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\transformers\trainer.py", line 2325, in train
-    return inner_training_loop(
-        args=args,
-    ...<2 lines>...
-        ignore_keys_for_eval=ignore_keys_for_eval,
-    )
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\transformers\trainer.py", line 2674, in _inner_training_loop
-    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\transformers\trainer.py", line 4071, in training_step
-    self.accelerator.backward(loss, **kwargs)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\accelerate\accelerator.py", line 2740, in backward
-    loss.backward(**kwargs)
-    ~~~~~~~~~~~~~^^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\torch\_tensor.py", line 625, in backward
-    torch.autograd.backward(
-    ~~~~~~~~~~~~~~~~~~~~~~~^
-        self, gradient, retain_graph, create_graph, inputs=inputs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\torch\autograd\__init__.py", line 354, in backward
-    _engine_run_backward(
-    ~~~~~~~~~~~~~~~~~~~~^
-        tensors,
-        ^^^^^^^^
-    ...<5 lines>...
-        accumulate_grad=True,
-        ^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\torch\autograd\graph.py", line 841, in _engine_run_backward
-    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        t_outputs, *args, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )  # Calls into the C++ engine to run the backward pass
-    ^
-RuntimeError: element 0 of tensors does not require grad and does not have a grad_fn
-2025-11-18 03:25:36,984 - ERROR - ❌ Fehler: element 0 of tensors does not require grad and does not have a grad_fn
-Traceback (most recent call last):
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\train.py", line 62, in main
-    trainer_instance.train(model, tokenizer, train_tokenized, eval_tokenized)
-    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\src\trainer.py", line 92, in train
-    trainer.train()
-    ~~~~~~~~~~~~~^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\transformers\trainer.py", line 2325, in train
-    return inner_training_loop(
-        args=args,
-    ...<2 lines>...
-        ignore_keys_for_eval=ignore_keys_for_eval,
-    )
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\transformers\trainer.py", line 2674, in _inner_training_loop
-    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\transformers\trainer.py", line 4071, in training_step
-    self.accelerator.backward(loss, **kwargs)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\accelerate\accelerator.py", line 2740, in backward
-    loss.backward(**kwargs)
-    ~~~~~~~~~~~~~^^^^^^^^^^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\torch\_tensor.py", line 625, in backward
-    torch.autograd.backward(
-    ~~~~~~~~~~~~~~~~~~~~~~~^
-        self, gradient, retain_graph, create_graph, inputs=inputs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\torch\autograd\__init__.py", line 354, in backward
-    _engine_run_backward(
-    ~~~~~~~~~~~~~~~~~~~~^
-        tensors,
-        ^^^^^^^^
-    ...<5 lines>...
-        accumulate_grad=True,
-        ^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\.venv\Lib\site-packages\torch\autograd\graph.py", line 841, in _engine_run_backward
-    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        t_outputs, *args, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )  # Calls into the C++ engine to run the backward pass
-    ^
-RuntimeError: element 0 of tensors does not require grad and does not have a grad_fn
-2025-11-18 03:29:21,965 - INFO - ============================================================
-2025-11-18 03:29:21,965 - INFO - 🎓 H5P-Generator Training
-2025-11-18 03:29:21,965 - INFO - ============================================================
-2025-11-18 03:29:21,965 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:29:21,965 - INFO - Dataset: data\processed\train_data.jsonl
-2025-11-18 03:29:21,966 - INFO - Output: outputs\final_model_cpu
-2025-11-18 03:29:21,966 - INFO - Max Length: 1024
-2025-11-18 03:29:21,966 - INFO - Batch Size: 1
-2025-11-18 03:29:21,966 - INFO - Gradient Accumulation: 4
-2025-11-18 03:29:21,966 - INFO - Effektive Batch Size: 4
-2025-11-18 03:29:21,966 - INFO - Epochen: 5
-2025-11-18 03:29:21,966 - INFO - Learning Rate: 0.0002
-2025-11-18 03:29:21,966 - INFO - ============================================================
-2025-11-18 03:29:21,967 - INFO - ✓ Konfiguration gespeichert
-2025-11-18 03:29:21,967 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
-2025-11-18 03:29:22,638 - INFO - ✓ 9 Beispiele geladen
-2025-11-18 03:29:22,638 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
-2025-11-18 03:29:22,639 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
-2025-11-18 03:29:22,639 - INFO - ℹ️ Keine Evaluationsdaten konfiguriert (eval_path=None)
-2025-11-18 03:29:22,639 - INFO - ⚙️ Lade Tokenizer: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:29:23,255 - INFO - ✓ Padding-Seite: left
-2025-11-18 03:29:23,263 - INFO - ✓ Vocab Size: 32000
-2025-11-18 03:29:23,263 - INFO - ✓ BOS: <s> (ID: 1)
-2025-11-18 03:29:23,264 - INFO - ✓ EOS: </s> (ID: 2)
-2025-11-18 03:29:23,264 - INFO - ✓ PAD: </s> (ID: 2)
-2025-11-18 03:29:23,264 - INFO - ⚙️ Lade Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-2025-11-18 03:29:26,227 - INFO - ✓ Modell geladen auf: cpu
-2025-11-18 03:29:26,227 - INFO - ✓ Model dtype: torch.float32
-2025-11-18 03:29:26,228 - INFO - 🔧 Aktiviere LoRA
-2025-11-18 03:29:26,433 - INFO - ✓ Trainierbare Parameter: 12,615,680 / 1,112,664,064 (1.13%)
-2025-11-18 03:29:26,433 - INFO - ✓ LoRA Rank: 16
-2025-11-18 03:29:26,434 - INFO - ✓ LoRA Alpha: 32
-2025-11-18 03:29:26,434 - INFO - ✓ Target Modules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']
-2025-11-18 03:29:26,434 - INFO - 🧹 Tokenisiere Trainingsdaten...
-2025-11-18 03:29:26,480 - INFO - ✓ Training tokenisiert: 9 Beispiele
-2025-11-18 03:29:26,480 - INFO - 🚀 Starte Training
-2025-11-18 03:51:39,738 - INFO - ✓ Training erfolgreich abgeschlossen
-2025-11-18 03:51:39,747 - INFO - 💾 Speichere Modell
-2025-11-18 03:51:40,423 - INFO - ✓ Stats gespeichert: outputs\final_model_cpu\training_stats.json
-2025-11-18 03:51:40,423 - INFO - 🎉 Training fertig! → outputs\final_model_cpu
-2025-11-18 03:51:40,426 - INFO - ============================================================
-2025-11-18 03:51:40,426 - INFO - 🎉 Training erfolgreich abgeschlossen!
-2025-11-18 03:51:40,426 - INFO - ============================================================
-2025-11-18 03:51:40,427 - INFO - 📁 Modell: C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\outputs\final_model_cpu
-2025-11-18 03:51:40,428 - INFO - 📊 Trainingsdaten: 9 Beispiele
-2025-11-18 03:51:40,428 - INFO - 🔧 LoRA Rank: 16
-2025-11-18 03:51:40,428 - INFO - 📈 Epochen: 5
-2025-11-18 03:51:40,428 - INFO - ============================================================
-2025-11-18 03:51:40,428 - INFO - Nächste Schritte:
-2025-11-18 03:51:40,428 - INFO - 1. Teste das Modell: python inference.py
-2025-11-18 03:51:40,428 - INFO - 2. Validiere generierte H5Ps
-2025-11-18 03:51:40,428 - INFO - 3. Bei Bedarf: Nachtraining mit mehr Daten
-2025-11-18 03:51:40,429 - INFO - ============================================================
+2025-12-01 15:33:11,314 - INFO - ============================================================
+2025-12-01 15:33:11,314 - INFO - 🎓 H5P-Generator Training
+2025-12-01 15:33:11,314 - INFO - ============================================================
+2025-12-01 15:33:11,315 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2025-12-01 15:33:11,315 - INFO - Dataset: data\processed\train_data.jsonl
+2025-12-01 15:33:11,315 - INFO - Output: outputs\final_model_cpu
+2025-12-01 15:33:11,316 - INFO - Max Length: 1024
+2025-12-01 15:33:11,316 - INFO - Batch Size: 1
+2025-12-01 15:33:11,316 - INFO - Gradient Accumulation: 4
+2025-12-01 15:33:11,316 - INFO - Effektive Batch Size: 4
+2025-12-01 15:33:11,316 - INFO - Epochen: 3
+2025-12-01 15:33:11,317 - INFO - Learning Rate: 0.0001
+2025-12-01 15:33:11,317 - INFO - ============================================================
+2025-12-01 15:33:11,318 - INFO - ✓ Konfiguration gespeichert
+2025-12-01 15:33:11,318 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
+2025-12-01 15:33:13,868 - INFO - ✓ 110 Beispiele geladen
+2025-12-01 15:33:13,869 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
+2025-12-01 15:33:13,869 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
+2025-12-01 15:33:13,870 - INFO - ℹ️ Keine Evaluationsdaten konfiguriert (eval_path=None)
+2025-12-01 15:33:13,870 - INFO - ⚙️ Lade Tokenizer: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2025-12-01 15:33:15,632 - INFO - ✓ Padding-Seite: left
+2025-12-01 15:33:15,639 - INFO - ✓ Vocab Size: 32000
+2025-12-01 15:33:15,639 - INFO - ✓ BOS: <s> (ID: 1)
+2025-12-01 15:33:15,640 - INFO - ✓ EOS: </s> (ID: 2)
+2025-12-01 15:33:15,640 - INFO - ✓ PAD: </s> (ID: 2)
+2025-12-01 15:33:15,640 - INFO - ⚙️ Lade Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2025-12-01 15:33:19,372 - INFO - ✓ Modell geladen auf: cpu
+2025-12-01 15:33:19,373 - INFO - ✓ Model dtype: torch.float32
+2025-12-01 15:33:19,373 - INFO - 🔧 Aktiviere LoRA
+2025-12-01 15:33:19,661 - INFO - ✓ Trainierbare Parameter: 12,615,680 / 1,112,664,064 (1.13%)
+2025-12-01 15:33:19,661 - INFO - ✓ LoRA Rank: 16
+2025-12-01 15:33:19,662 - INFO - ✓ LoRA Alpha: 32
+2025-12-01 15:33:19,662 - INFO - ✓ Target Modules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']
+2025-12-01 15:33:19,662 - INFO - 🧹 Tokenisiere Trainingsdaten...
+2025-12-01 15:33:19,785 - INFO - ✓ Training tokenisiert: 110 Beispiele
+2025-12-01 15:33:19,785 - INFO - 🚀 Starte Training
+2025-12-01 18:37:57,139 - INFO - ✓ Training erfolgreich abgeschlossen
+2025-12-01 18:37:57,146 - INFO - 💾 Speichere Modell
+2025-12-01 18:37:57,649 - INFO - ✓ Stats gespeichert: outputs\final_model_cpu\training_stats.json
+2025-12-01 18:37:57,649 - INFO - 🎉 Training fertig! → outputs\final_model_cpu
+2025-12-01 18:37:57,658 - INFO - ============================================================
+2025-12-01 18:37:57,659 - INFO - 🎉 Training erfolgreich abgeschlossen!
+2025-12-01 18:37:57,659 - INFO - ============================================================
+2025-12-01 18:37:57,660 - INFO - 📁 Modell: C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\outputs\final_model_cpu
+2025-12-01 18:37:57,663 - INFO - 📊 Trainingsdaten: 110 Beispiele
+2025-12-01 18:37:57,663 - INFO - 🔧 LoRA Rank: 16
+2025-12-01 18:37:57,663 - INFO - 📈 Epochen: 3
+2025-12-01 18:37:57,663 - INFO - ============================================================
+2025-12-01 18:37:57,664 - INFO - Nächste Schritte:
+2025-12-01 18:37:57,664 - INFO - 1. Teste das Modell: python inference.py
+2025-12-01 18:37:57,664 - INFO - 2. Validiere generierte H5Ps
+2025-12-01 18:37:57,664 - INFO - 3. Bei Bedarf: Nachtraining mit mehr Daten
+2025-12-01 18:37:57,664 - INFO - ============================================================
+2025-12-01 22:08:23,408 - INFO - ============================================================
+2025-12-01 22:08:23,408 - INFO - 🎓 H5P-Generator Training
+2025-12-01 22:08:23,409 - INFO - ============================================================
+2025-12-01 22:08:23,409 - INFO - Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2025-12-01 22:08:23,409 - INFO - Dataset: data\processed\train_data.jsonl
+2025-12-01 22:08:23,409 - INFO - Output: outputs\final_model_cpu
+2025-12-01 22:08:23,409 - INFO - Max Length: 1024
+2025-12-01 22:08:23,409 - INFO - Batch Size: 1
+2025-12-01 22:08:23,409 - INFO - Gradient Accumulation: 4
+2025-12-01 22:08:23,409 - INFO - Effektive Batch Size: 4
+2025-12-01 22:08:23,409 - INFO - Epochen: 3
+2025-12-01 22:08:23,409 - INFO - Learning Rate: 0.0001
+2025-12-01 22:08:23,410 - INFO - ============================================================
+2025-12-01 22:08:23,411 - INFO - ✓ Konfiguration gespeichert
+2025-12-01 22:08:23,411 - INFO - 📥 Lade Training: data\processed\train_data.jsonl
+2025-12-01 22:08:26,820 - INFO - ✓ 110 Beispiele geladen
+2025-12-01 22:08:26,821 - INFO - 📝 Beispiel-Instruction: Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basi...
+2025-12-01 22:08:26,821 - INFO - 📝 Beispiel-Output: {"question": "Was ist ein VPN?", "answers": [{"text": "Ein Virus-Schutz", "correct": false}, {"text"...
+2025-12-01 22:08:26,822 - INFO - ℹ️ Keine Evaluationsdaten konfiguriert (eval_path=None)
+2025-12-01 22:08:26,822 - INFO - ⚙️ Lade Tokenizer: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2025-12-01 22:08:28,698 - INFO - ✓ Padding-Seite: left
+2025-12-01 22:08:28,704 - INFO - ✓ Vocab Size: 32000
+2025-12-01 22:08:28,704 - INFO - ✓ BOS: <s> (ID: 1)
+2025-12-01 22:08:28,705 - INFO - ✓ EOS: </s> (ID: 2)
+2025-12-01 22:08:28,705 - INFO - ✓ PAD: </s> (ID: 2)
+2025-12-01 22:08:28,705 - INFO - ⚙️ Lade Modell: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2025-12-01 22:08:34,181 - INFO - ✓ Modell geladen auf: cpu
+2025-12-01 22:08:34,183 - INFO - ✓ Model dtype: torch.float32
+2025-12-01 22:08:34,183 - INFO - 🔧 Aktiviere LoRA
+2025-12-01 22:08:34,532 - INFO - ✓ Trainierbare Parameter: 12,615,680 / 1,112,664,064 (1.13%)
+2025-12-01 22:08:34,532 - INFO - ✓ LoRA Rank: 16
+2025-12-01 22:08:34,532 - INFO - ✓ LoRA Alpha: 32
+2025-12-01 22:08:34,532 - INFO - ✓ Target Modules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']
+2025-12-01 22:08:34,533 - INFO - 🧹 Tokenisiere Trainingsdaten...
+2025-12-01 22:08:34,763 - INFO - ✓ Training tokenisiert: 110 Beispiele
+2025-12-01 22:08:34,763 - INFO - 🚀 Starte Training
+2025-12-02 01:46:34,693 - INFO - ✓ Training erfolgreich abgeschlossen
+2025-12-02 01:46:34,703 - INFO - 💾 Speichere Modell
+2025-12-02 01:46:35,230 - INFO - ✓ Stats gespeichert: outputs\final_model_cpu\training_stats.json
+2025-12-02 01:46:35,230 - INFO - 🎉 Training fertig! → outputs\final_model_cpu
+2025-12-02 01:46:35,236 - INFO - ============================================================
+2025-12-02 01:46:35,237 - INFO - 🎉 Training erfolgreich abgeschlossen!
+2025-12-02 01:46:35,237 - INFO - ============================================================
+2025-12-02 01:46:35,238 - INFO - 📁 Modell: C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\outputs\final_model_cpu
+2025-12-02 01:46:35,239 - INFO - 📊 Trainingsdaten: 110 Beispiele
+2025-12-02 01:46:35,239 - INFO - 🔧 LoRA Rank: 16
+2025-12-02 01:46:35,239 - INFO - 📈 Epochen: 3
+2025-12-02 01:46:35,239 - INFO - ============================================================
+2025-12-02 01:46:35,240 - INFO - Nächste Schritte:
+2025-12-02 01:46:35,240 - INFO - 1. Teste das Modell: python inference.py
+2025-12-02 01:46:35,240 - INFO - 2. Validiere generierte H5Ps
+2025-12-02 01:46:35,240 - INFO - 3. Bei Bedarf: Nachtraining mit mehr Daten
+2025-12-02 01:46:35,240 - INFO - ============================================================

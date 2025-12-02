@@ -1,87 +1,129 @@
 import json
 import torch
+import re
 from pathlib import Path
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from peft import PeftModel, PeftConfig
 from src.h5p_validator import H5PValidator
 
-# --------------------------------------
-# Modellpfad
-# --------------------------------------
+
+# =============================================================================
+# 1. MODEL-PFAD
+# =============================================================================
 MODEL_PATH = r"C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\outputs\final_model_cpu"
+BASE_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-print(f"🧠 Lade Modell aus: {MODEL_PATH}")
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, dtype=torch.float32).to("cpu")
+print(f"🧠 Lade Basismodell…")
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+
+base_model = AutoModelForCausalLM.from_pretrained(
+    BASE_MODEL,
+    torch_dtype=torch.float32
+)
+
+print(f"🧠 Lade LoRA Adapter…")
+model = PeftModel.from_pretrained(base_model, MODEL_PATH)
+
+# Merge LoRA → zwingt, dass LoRA wirklich angewendet wird
+model = model.merge_and_unload()
 model.eval()
+model.to("cpu")
 
-# Speicherordner für erzeugte H5P-Dateien
-OUTPUT_DIR = Path("data/h5p")
-OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
+print("👉 LoRA geladen & gemerged (Inference nutzt Feintuning)")
 
 
-# --------------------------------------
-# Hilfsfunktionen
-# --------------------------------------
-
+# =============================================================================
+# 2. PROMPT GENERATOR – IDENTISCH ZUM TRAINING!
+# =============================================================================
 def build_prompt(question: str) -> str:
     """
-    Baut das Chat-Prompt so, wie es im Training genutzt wurde.
-    STRICT MODE: Das Modell MUSS valides JSON schreiben.
+    Der Prompt MUSS 1:1 das SFT-Trainingsformat nachbilden.
     """
-    system_message = (
-        "Du bist ein H5P-Content-Generator. "
-        "Erstelle IMMER eine vollständig valide H5P content.json für Multiple-Choice. "
-        "Antworte ausschließlich mit JSON ohne Erklärungen."
+
+    instruction_text = (
+        "Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten "
+        "und 1 richtigen Antwort(en), basierend auf folgender Frage: "
+        f"'{question}'. "
+        "Antworte ausschließlich als einzelnes gültiges JSON-Objekt "
+        "im korrekten H5P-MultipleChoice-Format. Keine Erklärungen."
     )
 
-    prompt = (
-        f"<|system|>\n{system_message}</s>\n"
-        f"<|user|>\n{question}</s>\n"
+    return (
+        f"<|system|>\n"
+        f"Du bist ein H5P-Content-Generator.</s>\n"
+        f"<|user|>\n{instruction_text}</s>\n"
         f"<|assistant|>\n"
     )
 
-    return prompt
 
+# =============================================================================
+# 3. JSON EXTRACTOR – nimmt NUR das erste vollständige JSON
+# =============================================================================
+def extract_first_json(text: str) -> str | None:
+    """
+    Findet das erste vollständige JSON-Objekt im Modelltext.
+    """
+    pattern = r"\{(?:[^{}]|(?:\{[^{}]*\}))*\}"
+    matches = re.findall(pattern, text, flags=re.DOTALL)
 
-def model_answer(question: str) -> str:
-    """ Ruft das Modell im STRICT MODE auf. """
-    prompt = build_prompt(question)
+    if not matches:
+        return None
 
-    inputs = tokenizer(prompt, return_tensors="pt")
-    with torch.no_grad():
-        output = model.generate(
-            **inputs,
-            max_new_tokens=500,
-            do_sample=False,
-            temperature=0.0
-        )
+    first = matches[0]
 
-    return tokenizer.decode(output[0], skip_special_tokens=True)
-
-
-def extract_json(raw_text: str) -> str | None:
-    """ Extrahiert den JSON-Teil aus der Modellantwort. """
     try:
-        start = raw_text.index("{")
-        end = raw_text.rindex("}") + 1
-        return raw_text[start:end]
+        json.loads(first)
+        return first
     except:
         return None
 
 
+# =============================================================================
+# 4. ANTWORT GENERIEREN
+# =============================================================================
+def model_answer(question: str) -> str:
+    prompt = build_prompt(question)
+    inputs = tokenizer(prompt, return_tensors="pt")
+
+    with torch.no_grad():
+        output = model.generate(
+            **inputs,
+            max_new_tokens=350,
+            do_sample=False,    # deterministisch
+            eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+
+    return tokenizer.decode(output[0], skip_special_tokens=False)
+
+
+# =============================================================================
+# 5. H5P SPEICHERN
+# =============================================================================
+OUTPUT_DIR = Path("data/h5p")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
 def save_h5p(json_text: str, filename: str):
-    """ Speichert valides JSON als content.json in einer H5P-Datei. """
     import zipfile
 
     output_file = OUTPUT_DIR / filename
 
     h5p_json = {
-        "title": "Generated H5P Content",
-        "mainLibrary": "H5P.MultiChoice",
+        "title": "Multiple Choice",
         "language": "en",
+        "mainLibrary": "H5P.MultiChoice",
+        "embedTypes": [
+            "iframe"
+        ],
+        "license": "U",
         "preloadedDependencies": [
-            {"machineName": "H5P.MultiChoice", "majorVersion": 1, "minorVersion": 14},
-            {"machineName": "H5P.Question", "majorVersion": 1, "minorVersion": 4}
+            {
+                "machineName": "H5P.MultiChoice",
+                "majorVersion": "1",
+                "minorVersion": "16"
+            }
         ]
     }
 
@@ -92,37 +134,35 @@ def save_h5p(json_text: str, filename: str):
     print(f"🎉 H5P gespeichert unter: {output_file.resolve()}")
 
 
-# --------------------------------------
-# Hauptfunktion
-# --------------------------------------
-
+# =============================================================================
+# 6. HAUPTFUNKTION
+# =============================================================================
 def generate_h5p(question: str):
     print(f"\n🔹 Frage: {question}")
 
-    # Modellantwort
     raw = model_answer(question)
-    extracted = extract_json(raw)
+    print("🔎 Modellrohantwort:\n", raw)
+
+    extracted = extract_first_json(raw)
 
     if extracted is None:
-        print("❌ Konnte kein JSON extrahieren.")
-        print("Antwort:", raw)
+        print("❌ Konnte kein gültiges JSON extrahieren.")
         return
 
-    # STRICT MODE VALIDIERUNG
-    ok, error, data = H5PValidator.validate_multiple_choice(extracted)
+    ok, err, parsed = H5PValidator.validate_multiple_choice(extracted)
 
     if not ok:
-        print("❌ Ungültiges JSON:", error)
+        print(f"❌ JSON ungültig: {err}")
         print("Antwort:", extracted)
         return
 
-    print("✓ JSON valide")
+    print("✅ JSON gültig!")
     save_h5p(extracted, "generated_mc.h5p")
 
 
-# --------------------------------------
-# AUSFÜHRUNG
-# --------------------------------------
+# =============================================================================
+# 7. AUSFÜHRUNG
+# =============================================================================
 if __name__ == "__main__":
-    frage = "Erstelle eine Multiple-Choice-Frage über Phishing."
+    frage = "Was ist Phishing?"
     generate_h5p(frage)
