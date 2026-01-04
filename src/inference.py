@@ -2,6 +2,16 @@ import json
 import torch
 import re
 from pathlib import Path
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_ROOT / "data" / "h5p"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel, PeftConfig
@@ -89,10 +99,11 @@ def model_answer(question: str) -> str:
     with torch.no_grad():
         output = model.generate(
             **inputs,
-            max_new_tokens=350,
+            max_new_tokens=758,
             do_sample=False,    # deterministisch
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.0
         )
 
     return tokenizer.decode(output[0], skip_special_tokens=False)
@@ -101,14 +112,11 @@ def model_answer(question: str) -> str:
 # =============================================================================
 # 5. H5P SPEICHERN
 # =============================================================================
-OUTPUT_DIR = Path("data/h5p")
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
 
 def save_h5p(json_text: str, filename: str):
     import zipfile
 
-    output_file = OUTPUT_DIR / filename
+    output_file = DATA_DIR / filename
 
     h5p_json = {
         "title": "Multiple Choice",
@@ -164,5 +172,5 @@ def generate_h5p(question: str):
 # 7. AUSFÜHRUNG
 # =============================================================================
 if __name__ == "__main__":
-    frage = "Was ist Phishing?"
+    frage = "Was ist Quid-Pro-Quo-Phishing?"
     generate_h5p(frage)
