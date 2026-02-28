@@ -9,50 +9,68 @@ class DataPreprocessor:
         self.tokenizer = tokenizer
         self.max_length = max_length
 
-    def format_h5p_example(self, instruction: str, output: str) -> str:
+        # Sicherstellen, dass pad_token gesetzt ist
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
 
+    def format_h5p_example(self, tokenizer, instruction: str, output: str) -> str:
+        messages = [
+            {
+                "role": "system",
+                "content": "Antworte ausschließlich mit GENAU EINEM JSON-Objekt. KEIN Zusatztext."
+            },
+            {
+                "role": "user",
+                "content": instruction
+            },
+            {
+                "role": "assistant",
+                "content": output
+            }
+        ]
 
-        system_message = (
-            "Du bist ein H5P-Content-Generator. Deine Aufgabe ist es, "
-            "interaktive Lernmaterialien im H5P-JSON-Format zu erstellen. "
-            "Antworte NUR mit validem JSON, ohne zusätzliche Erklärungen oder Text."
-        )
-
-        prompt = (
-            f"<|system|>\n{system_message}</s>\n"
-            f"<|user|>\n{instruction}</s>\n"
-            f"<|assistant|>\n{output}</s>"
-        )
-
-        return prompt
+        # tokenize=False gibt den fertigen String zurück
+        # add_generation_prompt=False, da wir den Assistant-Output (unser Label) mitgeben
+        return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
 
     def tokenize_function(self, examples):
         """Tokenisiert Batch von Beispielen"""
-        # Formatiere alle Beispiele
+        # 1. Formatiere alle Beispiele unter Verwendung des Chat-Templates
+        # Wichtig: Übergeben Sie hier den Tokenizer an Ihre format_h5p_example
         texts = [
-            self.format_h5p_example(inst, out)
+            self.format_h5p_example(self.tokenizer, inst, out)
             for inst, out in zip(examples['instruction'], examples['output'])
         ]
 
-        # Tokenisieren
+        # 2. Tokenisieren
         tokenized = self.tokenizer(
             texts,
             truncation=True,
             max_length=self.max_length,
             padding="max_length",
-            return_tensors=None
+            return_tensors=None  # Bleibt None für Datasets-Library
         )
 
-        # Labels = Input IDs (für Causal LM)
-        tokenized["labels"] = tokenized["input_ids"].copy()
+        # 3. Labels hinzufügen (Kopie der input_ids)
+        # Das ist für den SFTTrainer oder Trainer notwendig, damit er weiß, was er lernen soll
+        tokenized["labels"] = [ids.copy() for ids in tokenized["input_ids"]]
 
         return tokenized
 
     def process_dataset(self, dataset: Dataset) -> Dataset:
         """Verarbeitet komplettes Dataset"""
-        return dataset.map(
+        processed = dataset.map(
             self.tokenize_function,
             batched=True,
             remove_columns=dataset.column_names,
-            desc="Tokenisierung"
+            desc="Tokenisierung",
+            load_from_cache_file=False
         )
+
+        # Format für PyTorch setzen
+        processed.set_format(
+            type='torch',
+            columns=['input_ids', 'attention_mask', 'labels']
+        )
+
+        return processed

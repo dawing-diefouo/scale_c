@@ -1,18 +1,63 @@
+# -*- coding: utf-8 -*-
+
 import json
+import re
 import torch
-from pathlib import Path
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from src.h5p_validator import H5PValidator
+from peft import PeftModel
+from pathlib import Path
 
-# --------------------------------------
-# Modellpfad
-# --------------------------------------
-MODEL_PATH = r"C:\Users\dawin\OneDrive\Documents\Semester_1\Projekt2\scale_c\outputs\final_model_cpu"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ADAPTER_PATH = PROJECT_ROOT / "outputs" / "final_model_gpu-mistral"
 
-print(f"🧠 Lade Modell aus: {MODEL_PATH}")
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, dtype=torch.float32).to("cpu")
-model.eval()
+# ------------- CONFIG -------------
+MODE = "lora"  # "base" oder "lora"
+MERGE = False  # True nur wenn du ein merged Modell willst (Deployment-Test)
+base_model_name = "mistralai/Mistral-7B-Instruct-v0.2"
+# ----------------------------------
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+dtype = torch.float16 if device == "cuda" else torch.float32
+
+print(f"Mode: {MODE} | Merge: {MERGE}")
+print(f"Base: {base_model_name}")
+if MODE == "lora":
+    print(f"Adapter: {ADAPTER_PATH}")
+
+# Tokenizer IMMER vom Basismodell
+tokenizer = AutoTokenizer.from_pretrained(base_model_name)
+if tokenizer.pad_token_id is None and tokenizer.eos_token_id is not None:
+    tokenizer.pad_token_id = tokenizer.eos_token_id
+
+# Basismodell laden
+base_model = AutoModelForCausalLM.from_pretrained(
+    base_model_name,
+    torch_dtype=dtype,
+    device_map=None,          # bewusst: wir steuern via .to(device)
+    trust_remote_code=True
+).to(device)
+base_model.eval()
+base_model.config.pad_token_id = tokenizer.pad_token_id
+
+# Modell je nach Mode
+if MODE == "base":
+    model = base_model
+else:
+    # LoRA Adapter dazu
+    model = PeftModel.from_pretrained(base_model, str(ADAPTER_PATH))
+    if MERGE:
+        model = model.merge_and_unload()  # danach ist es ein "normales" Model ohne PEFT
+    model.to(device)
+    model.eval()
+
+print("Modell geladen.")
+print(f"Device: {device}")
+
+model.to(device)
+
+
+print("Modell mit LoRA-Adapter geladen!")
+print(f"   Device: {device}")
 
 # Speicherordner für erzeugte H5P-Dateien
 OUTPUT_DIR = Path("data/h5p")
@@ -23,106 +68,124 @@ OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 # Hilfsfunktionen
 # --------------------------------------
 
-def build_prompt(question: str) -> str:
-    """
-    Baut das Chat-Prompt so, wie es im Training genutzt wurde.
-    STRICT MODE: Das Modell MUSS valides JSON schreiben.
-    """
-    system_message = (
-        "Du bist ein H5P-Content-Generator. "
-        "Erstelle IMMER eine vollständig valide H5P content.json für Multiple-Choice. "
-        "Antworte ausschließlich mit JSON ohne Erklärungen."
-    )
+def build_prompt(tokenizer, question: str) -> str:
+    messages = [
+        {
+            "role": "system",
+            "content": "Antworte ausschließlich mit GENAU EINEM JSON-Objekt. KEINE Erklärungen, KEIN zusätzlicher Text."
+        },
+        {
+            "role": "user",
+            "content": f"Erstelle eine H5P-Multiple-Choice-Frage mit 4 Antwortmöglichkeiten und 1 richtigen Antwort(en), basierend auf folgender Frage: '{question}'."
+        }
+    ]
 
-    prompt = (
-        f"<|system|>\n{system_message}</s>\n"
-        f"<|user|>\n{question}</s>\n"
-        f"<|assistant|>\n"
-    )
-
-    return prompt
+    # add_generation_prompt=True fügt den Header für den Assistant automatisch an
+    # (z.B. <|assistant|>\n), damit das Modell weiß: Jetzt bin ich dran!
+    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
 
 def model_answer(question: str) -> str:
-    """ Ruft das Modell im STRICT MODE auf. """
-    prompt = build_prompt(question)
+    """Ruft das Modell auf."""
+    # Übergeben Sie den geladenen Tokenizer als erstes Argument
+    prompt = build_prompt(tokenizer, question)
 
-    inputs = tokenizer(prompt, return_tensors="pt")
+    inputs = tokenizer(text=prompt, return_tensors="pt").to(model.device)
+
+
     with torch.no_grad():
         output = model.generate(
             **inputs,
-            max_new_tokens=500,
+            max_new_tokens=1024,
             do_sample=False,
-            temperature=0.0
+            pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.0,
         )
 
-    return tokenizer.decode(output[0], skip_special_tokens=True)
+    full_response = tokenizer.decode(output[0], skip_special_tokens=False)
+
+    # Extrahiere nur den Assistant-Teil
+    if "<|assistant|>" in full_response:
+        response = full_response.split("<|assistant|>")[-1]
+    else:
+        response = full_response
+
+    # Stoppe bei </s>
+    if "</s>" in response:
+        response = response.split("</s>")[0]
+
+    return response.strip()
 
 
-def extract_json(raw_text: str) -> str | None:
-    """ Extrahiert den JSON-Teil aus der Modellantwort. """
+
+
+def extract_json(text):
+    """Extrahiert das erste vollständige JSON-Objekt aus einem String."""
     try:
-        start = raw_text.index("{")
-        end = raw_text.rindex("}") + 1
-        return raw_text[start:end]
-    except:
+        # Suche nach dem ersten { und dem letzten }
+        start_idx = text.find('{')
+        end_idx = text.rfind('}')
+
+        if start_idx == -1 or end_idx == -1:
+            return None
+
+        json_str = text[start_idx:end_idx + 1]
+        return json.loads(json_str)
+    except Exception as e:
+        print(f"Fehler beim Parsen: {e}")
         return None
 
 
-def save_h5p(json_text: str, filename: str):
-    """ Speichert valides JSON als content.json in einer H5P-Datei. """
-    import zipfile
+def next_content_filename() -> str:
+    """Erzeugt den n?chsten content_XXX.json Namen."""
+    pattern = re.compile(r"^content_(\d{3})\.json$")
+    max_idx = 0
 
-    output_file = OUTPUT_DIR / filename
+    if OUTPUT_DIR.exists():
+        for path in OUTPUT_DIR.iterdir():
+            match = pattern.match(path.name)
+            if match:
+                max_idx = max(max_idx, int(match.group(1)))
 
-    h5p_json = {
-        "title": "Generated H5P Content",
-        "mainLibrary": "H5P.MultiChoice",
-        "language": "en",
-        "preloadedDependencies": [
-            {"machineName": "H5P.MultiChoice", "majorVersion": 1, "minorVersion": 14},
-            {"machineName": "H5P.Question", "majorVersion": 1, "minorVersion": 4}
-        ]
-    }
+    return f"content_{max_idx + 1:03d}.json"
 
-    with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as h5p:
-        h5p.writestr("content/content.json", json_text)
-        h5p.writestr("h5p.json", json.dumps(h5p_json, ensure_ascii=False, indent=2))
+def generate_content(question: str, show_output: bool = True):
+    """Generiert Content aus einer Eingabe."""
 
-    print(f"🎉 H5P gespeichert unter: {output_file.resolve()}")
-
-
-# --------------------------------------
-# Hauptfunktion
-# --------------------------------------
-
-def generate_h5p(question: str):
-    print(f"\n🔹 Frage: {question}")
-
-    # Modellantwort
     raw = model_answer(question)
     extracted = extract_json(raw)
+    payload = extracted if extracted is not None else raw
+    if show_output:
+        preview = payload if isinstance(payload, str) else json.dumps(payload, ensure_ascii=False, indent=2)
+        print("\nVorschau (gekuerzt):")
+        print(preview[:500] + ("..." if len(preview) > 500 else ""))
+    output_file = OUTPUT_DIR / next_content_filename()
+    with open(output_file, "w", encoding="utf-8") as f:
+        if isinstance(payload, dict):
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        else:
+            f.write(str(payload))
+    if show_output:
+        print(f"{output_file.name} gespeichert")
 
-    if extracted is None:
-        print("❌ Konnte kein JSON extrahieren.")
-        print("Antwort:", raw)
-        return
-
-    # STRICT MODE VALIDIERUNG
-    ok, error, data = H5PValidator.validate_multiple_choice(extracted)
-
-    if not ok:
-        print("❌ Ungültiges JSON:", error)
-        print("Antwort:", extracted)
-        return
-
-    print("✓ JSON valide")
-    save_h5p(extracted, "generated_mc.h5p")
 
 
 # --------------------------------------
 # AUSFÜHRUNG
 # --------------------------------------
 if __name__ == "__main__":
-    frage = "Erstelle eine Multiple-Choice-Frage über Phishing."
-    generate_h5p(frage)
+    # Test mit mehreren Fragen aus Datei (eine Frage pro Zeile)
+    questions_path = Path("data/processed/test_questions.txt")
+    if not questions_path.exists():
+        raise FileNotFoundError(f"Nicht gefunden: {questions_path.resolve()}")
+
+    questions = [
+        line.strip()
+        for line in questions_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+    for question in questions:
+        generate_content(question, show_output=False)
+    print(f"{len(questions)} Inhalte gespeichert")

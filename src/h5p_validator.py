@@ -1,12 +1,12 @@
 import json
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 
 
 class H5PValidator:
     """Validiert H5P-MultipleChoice-JSON-Strukturen im STRICT MODE."""
 
     @staticmethod
-    def validate_multiple_choice(h5p_json: str) -> tuple[bool, Optional[str], Optional[Dict]]:
+    def validate_multiple_choice(h5p_json: str) -> Tuple[bool, Optional[str], Optional[Dict]]:
 
         # 1. JSON parsen
         try:
@@ -32,8 +32,8 @@ class H5PValidator:
         if not isinstance(data["answers"], list):
             return False, "Feld 'answers' muss eine Liste sein", None
 
-        if len(data["answers"]) < 2:
-            return False, "Mindestens 2 Antwortmöglichkeiten erforderlich", None
+        if len(data["answers"]) < 4:
+            return False, "Genau 4 Antwortmöglichkeiten erforderlich", None
 
         # 6. Jede Antwort prüfen
         correct_count = 0

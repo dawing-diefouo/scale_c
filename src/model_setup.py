@@ -1,3 +1,4 @@
+from mpmath.libmp.libintmath import ifac2
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training
 import torch
@@ -50,18 +51,20 @@ class ModelSetup:
 
         model = AutoModelForCausalLM.from_pretrained(
             self.model_config.base_model,
-            torch_dtype=torch.float32,
+            torch_dtype= torch.float16 if torch.cuda.is_available() else torch.float32,
             device_map=None if self.model_config.device_map == "cpu" else self.model_config.device_map,
-            low_cpu_mem_usage=False,
+            low_cpu_mem_usage=True,
             trust_remote_code=self.model_config.trust_remote_code
         )
 
         # Wichtig für Training
         model.config.use_cache = False
+        model.gradient_checkpointing_enable()
 
         self.logger.info(f"✓ Modell geladen auf: {self.model_config.device_map}")
         self.logger.info(f"✓ Model dtype: {model.dtype}")
 
+        model = prepare_model_for_kbit_training(model)
         return model
 
     def apply_lora(self, model):
@@ -79,6 +82,11 @@ class ModelSetup:
 
         # Model für Training vorbereiten
         model = get_peft_model(model, lora_config)
+
+        # 🔑 WICHTIG: sicherstellen, dass LoRA-Parameter trainierbar sind
+        for name, param in model.named_parameters():
+            if "lora_" in name:
+                param.requires_grad = True
 
         # Parameter-Statistik
         from src.utils import print_trainable_params
