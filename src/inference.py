@@ -59,14 +59,16 @@ model.to(device)
 print("Modell mit LoRA-Adapter geladen!")
 print(f"   Device: {device}")
 
-# Speicherordner für erzeugte H5P-Dateien
-OUTPUT_DIR = Path("data/h5p")
-OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
+print(f"🧠 Lade LoRA Adapter…")
+model = PeftModel.from_pretrained(base_model, MODEL_PATH)
 
+# Merge LoRA → zwingt, dass LoRA wirklich angewendet wird
+model = model.merge_and_unload()
+model.eval()
+model.to("cpu")
 
-# --------------------------------------
-# Hilfsfunktionen
-# --------------------------------------
+print("👉 LoRA geladen & gemerged (Inference nutzt Feintuning)")
+
 
 def build_prompt(tokenizer, question: str) -> str:
     messages = [
@@ -84,7 +86,31 @@ def build_prompt(tokenizer, question: str) -> str:
     # (z.B. <|assistant|>\n), damit das Modell weiß: Jetzt bin ich dran!
     return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
+# =============================================================================
+# 3. JSON EXTRACTOR – nimmt NUR das erste vollständige JSON
+# =============================================================================
+def extract_first_json(text: str) -> str | None:
+    """
+    Findet das erste vollständige JSON-Objekt im Modelltext.
+    """
+    pattern = r"\{(?:[^{}]|(?:\{[^{}]*\}))*\}"
+    matches = re.findall(pattern, text, flags=re.DOTALL)
 
+    if not matches:
+        return None
+
+    first = matches[0]
+
+    try:
+        json.loads(first)
+        return first
+    except:
+        return None
+
+
+# =============================================================================
+# 4. ANTWORT GENERIEREN
+# =============================================================================
 def model_answer(question: str) -> str:
     """Ruft das Modell auf."""
     # Übergeben Sie den geladenen Tokenizer als erstes Argument
@@ -171,9 +197,9 @@ def generate_content(question: str, show_output: bool = True):
 
 
 
-# --------------------------------------
-# AUSFÜHRUNG
-# --------------------------------------
+# =============================================================================
+# 7. AUSFÜHRUNG
+# =============================================================================
 if __name__ == "__main__":
     # Test mit mehreren Fragen aus Datei (eine Frage pro Zeile)
     questions_path = Path("data/processed/test_questions.txt")

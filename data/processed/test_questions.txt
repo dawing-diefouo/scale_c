@@ -1,0 +1,18 @@
+Was ist der Unterschied zwischen Symmetrischer und Asymmetrischer Verschlüsselung?
+Wie schützt man Cloud-Daten vor unbefugtem Zugriff?
+Welche Risiken birgt das Internet of Things (IoT)?
+Wie unterstützt Biometrie die Authentifizierung?
+Was ist der Unterschied zwischen Authentication und Authorization?
+Wie funktioniert ein Honeypot in der Sicherheit?
+Welche Bedeutung hat Patch Management?
+Wie schützt man sich vor Shoulder Surfing?
+Was ist der Unterschied zwischen Hashing und Verschlüsselung?
+Wie verhindert Input Validation Web-Angriffe?
+Welche Rolle spielt künstliche Intelligenz in der Cybersecurity?
+Wie schützt man mobile Geräte vor Cyberangriffen?
+Was ist der Unterschied zwischen Risiko und Bedrohung?
+Wie wirkt sich Compliance auf Cybersecurity aus?
+Inwieweit schützt Data Loss Prevention (DLP)?
+Welchen Zweck erfüllt ein Security Information and Event Management (SIEM)?
+Wie unterstützt Log Management die Sicherheit?
+Was charakterisiert einen Advanced Persistent Threat (APT)?

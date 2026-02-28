@@ -48,6 +48,8 @@ class TrainingConfig:
     gradient_accumulation_steps: int = 4
     learning_rate: float = 2e-4  # ✅ FIX: Höher für LoRA
     warmup_steps: int = 100  # ✅ FIX: Reduziert für kleines Dataset
+    learning_rate: float = 1e-4
+    warmup_steps: int = 150
     logging_steps: int = 10
     save_steps: int = 500
     eval_steps: int = 100

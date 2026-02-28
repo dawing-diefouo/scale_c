@@ -1,3 +1,4 @@
+import json
 from datasets import Dataset
 from transformers import PreTrainedTokenizer
 
@@ -55,7 +56,8 @@ class DataPreprocessor:
         # Das ist für den SFTTrainer oder Trainer notwendig, damit er weiß, was er lernen soll
         tokenized["labels"] = [ids.copy() for ids in tokenized["input_ids"]]
 
-        return tokenized
+        encodings["labels"] = labels
+        return {k: v.tolist() for k, v in encodings.items()}
 
     def process_dataset(self, dataset: Dataset) -> Dataset:
         """Verarbeitet komplettes Dataset"""
