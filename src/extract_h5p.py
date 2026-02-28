@@ -7,7 +7,7 @@ import os
 INPUT_DIR = Path("data/raw")                # H5P-Dateien-Ordner
 OUTPUT_DIR = Path("data/processed")       # Zielordner
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-OUTPUT_FILE = os.path.join(OUTPUT_DIR, "train_data.jsonl")
+OUTPUT_FILE = os.path.join(OUTPUT_DIR, "eval_dataset.jsonl")
 
 
 def extract_h5p_content_json(h5p_path):

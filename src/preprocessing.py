@@ -10,69 +10,69 @@ class DataPreprocessor:
         self.tokenizer = tokenizer
         self.max_length = max_length
 
-    def format_h5p_example(self, instruction: str, output):
-        """Baut das Chatformat"""
+        # Sicherstellen, dass pad_token gesetzt ist
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        # Falls output ein JSON-String ist → in dict umwandeln
-        if isinstance(output, str):
-            try:
-                output = json.loads(output)
-            except:
-                pass
-
-        # JSON sauber serialisieren
-        output_json = json.dumps(output, ensure_ascii=False)
-
-        system_message = (
-            "Antworte ausschließlich mit GENAU EINEM JSON-Objekt. "
-            "KEINE Erklärungen, KEIN zusätzlicher Text."
-        )
-
-        prompt = (
-            f"<|system|>\n{system_message}</s>\n"
-            f"<|user|>\n{instruction}</s>\n"
-            f"<|assistant|>\n{output_json}</s>"
-        )
-
-        return prompt
-
-    def tokenize_function(self, examples):
-        texts = [
-            self.format_h5p_example(inst, out)
-            for inst, out in zip(examples["instruction"], examples["output"])
+    def format_h5p_example(self, tokenizer, instruction: str, output: str) -> str:
+        messages = [
+            {
+                "role": "system",
+                "content": "Antworte ausschließlich mit GENAU EINEM JSON-Objekt. KEIN Zusatztext."
+            },
+            {
+                "role": "user",
+                "content": instruction
+            },
+            {
+                "role": "assistant",
+                "content": output
+            }
         ]
 
-        encodings = self.tokenizer(
+        # tokenize=False gibt den fertigen String zurück
+        # add_generation_prompt=False, da wir den Assistant-Output (unser Label) mitgeben
+        return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+
+    def tokenize_function(self, examples):
+        """Tokenisiert Batch von Beispielen"""
+        # 1. Formatiere alle Beispiele unter Verwendung des Chat-Templates
+        # Wichtig: Übergeben Sie hier den Tokenizer an Ihre format_h5p_example
+        texts = [
+            self.format_h5p_example(self.tokenizer, inst, out)
+            for inst, out in zip(examples['instruction'], examples['output'])
+        ]
+
+        # 2. Tokenisieren
+        tokenized = self.tokenizer(
             texts,
             truncation=True,
             max_length=self.max_length,
             padding="max_length",
-            return_tensors="pt",
+            return_tensors=None  # Bleibt None für Datasets-Library
         )
 
-        # Labels: Kopie der Eingaben
-        labels = encodings["input_ids"].clone()
-
-        # Maskiere ALLES vor dem Assistant-Output
-        for i, text in enumerate(texts):
-            assistant_token_start = text.index("<|assistant|>")
-            # finde Länge bis zum Assistant-Token
-            prefix_ids = self.tokenizer(
-                text[:assistant_token_start],
-                truncation=True,
-                max_length=self.max_length,
-                return_tensors="pt",
-            )["input_ids"][0]
-
-            labels[i, : prefix_ids.shape[0]] = -100
+        # 3. Labels hinzufügen (Kopie der input_ids)
+        # Das ist für den SFTTrainer oder Trainer notwendig, damit er weiß, was er lernen soll
+        tokenized["labels"] = [ids.copy() for ids in tokenized["input_ids"]]
 
         encodings["labels"] = labels
         return {k: v.tolist() for k, v in encodings.items()}
 
     def process_dataset(self, dataset: Dataset) -> Dataset:
-        return dataset.map(
+        """Verarbeitet komplettes Dataset"""
+        processed = dataset.map(
             self.tokenize_function,
             batched=True,
             remove_columns=dataset.column_names,
             desc="Tokenisierung",
+            load_from_cache_file=False
         )
+
+        # Format für PyTorch setzen
+        processed.set_format(
+            type='torch',
+            columns=['input_ids', 'attention_mask', 'labels']
+        )
+
+        return processed
